@@ -47,7 +47,7 @@ with tab_ejecutar:
         with c2:
             v1y = st.number_input("Y1", value=5.0, step=0.1, format="%.1f")
             v2y = st.number_input("Y2", value=5.0, step=0.1, format="%.1f")
-            v3y = st.number_input("Y3", value=7.0, step=0.1, format="%.1f")
+            v3y = st.number_input("Y3", value=-5.0, step=0.1, format="%.1f")
     
         # El botón al final de la columna de controles
         generar = st.button("▶️ Generar Fractal")
