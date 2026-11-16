@@ -27,7 +27,7 @@ with tab_galeria:
 with tab_ejecutar:
     st.header("Generador de Fractales")
     
-    # 1. Diccionario con tus 4 archivos exactos
+    # 1. Diccionario con tus 4 archivos
     opciones_fractales = {
         "fractales_regulares.py": "Fractales en polígonos regulares (math)",
         "fractales_regulares_np.py": "Fractales en polígonos regulares (numpy)",
@@ -35,16 +35,11 @@ with tab_ejecutar:
         "fractales_cuadrado.py": "Fractales en cuadrados"
     }
     
-    # 2. Lista desplegable con las descripciones
     archivo_seleccionado = st.selectbox(
         "Elegí qué fractal querés generar:", 
         options=list(opciones_fractales.keys()),
         format_func=lambda x: opciones_fractales[x] 
     )
-    
-    # 3. Definimos si es triángulo (3 lados) o cuadrado (4 lados)
-    es_cuadrado = "cuadrado" in archivo_seleccionado.lower()
-    lados = 4 if es_cuadrado else 3
     
     col_controles, col_grafico = st.columns([1, 2]) 
     
@@ -52,10 +47,22 @@ with tab_ejecutar:
         st.write("### Parámetros")
         iteraciones = st.slider("Iteraciones:", min_value=1000, max_value=50000, value=20000, step=1000)
         
-        st.write(f"### Vértices del {'Cuadrado' if es_cuadrado else 'Triángulo'}")
+        # --- LÓGICA CONDICIONAL SEGÚN EL ARCHIVO ELEGIDO ---
         
-        # 4. Inputs para 3 vértices (Triángulo)
-        if not es_cuadrado:
+        # CASO 1: Polígonos regulares (math o numpy)
+        if "regulares" in archivo_seleccionado:
+            st.write("### Configuración del Polígono")
+            lados = st.number_input("Cantidad de lados:", min_value=3, max_value=20, value=3, step=1)
+            
+            # Calculamos los vértices automáticamente
+            import numpy as np
+            angulos = np.linspace(0, 2 * np.pi, lados, endpoint=False)
+            vertx = 2 * np.cos(angulos)
+            verty = 2 * np.sin(angulos)
+            
+        # CASO 2: Triángulo de cualquier tipo (pide coordenadas)
+        elif "triangulos" in archivo_seleccionado:
+            st.write("### Vértices del Triángulo")
             c1, c2 = st.columns(2)
             with c1:
                 v1x = st.number_input("X1", value=5.0, step=0.1, format="%.1f")
@@ -64,26 +71,19 @@ with tab_ejecutar:
             with c2:
                 v1y = st.number_input("Y1", value=5.0, step=0.1, format="%.1f")
                 v2y = st.number_input("Y2", value=5.0, step=0.1, format="%.1f")
-                v3y = st.number_input("Y3", value=-5.0, step=0.1, format="%.1f") 
+                v3y = st.number_input("Y3", value=-5.0, step=0.1, format="%.1f")
             vertx = [v1x, v2x, v3x]
             verty = [v1y, v2y, v3y]
-        
-        # 5. Inputs para 4 vértices (Cuadrado)
-        else:
-            c1, c2 = st.columns(2)
-            with c1:
-                v1x = st.number_input("X1", value=1.0, step=0.1, format="%.1f")
-                v2x = st.number_input("X2", value=1.0, step=0.1, format="%.1f")
-                v3x = st.number_input("X3", value=-1.0, step=0.1, format="%.1f")
-                v4x = st.number_input("X4", value=-1.0, step=0.1, format="%.1f")
-            with c2:
-                v1y = st.number_input("Y1", value=1.0, step=0.1, format="%.1f")
-                v2y = st.number_input("Y2", value=-1.0, step=0.1, format="%.1f")
-                v3y = st.number_input("Y3", value=-1.0, step=0.1, format="%.1f")
-                v4y = st.number_input("Y4", value=1.0, step=0.1, format="%.1f")
-            vertx = [v1x, v2x, v3x, v4x]
-            verty = [v1y, v2y, v3y, v4y]
+            lados = 3
             
+        # CASO 3: Cuadrado (no pide nada más, solo usa el cuadrado por defecto)
+        else:
+            st.write("### Cuadrado Predefinido")
+            st.write("El cuadrado ya está configurado con sus 4 vértices.")
+            vertx = [1.0, 1.0, -1.0, -1.0]
+            verty = [1.0, -1.0, -1.0, 1.0]
+            lados = 4
+
         generar = st.button("▶️ Generar Fractal")
 
     with col_grafico:
@@ -94,7 +94,7 @@ with tab_ejecutar:
                 p0x, p0y = 0.0, 0.0
                 
                 for _ in range(iteraciones):
-                    v = random.randint(0, lados - 1)
+                    v = random.randint(0, int(lados) - 1)
                     x = (p0x + vertx[v]) / 2
                     y = (p0y + verty[v]) / 2
                     fx.append(x)
