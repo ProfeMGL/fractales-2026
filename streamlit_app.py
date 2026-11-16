@@ -95,7 +95,7 @@ with tab_ejecutar:
                 ultimo=random.radint(0,3)
                 for _ in range(iteraciones):
                     elegido=random.radint(0,3)
-                    while elegido==ultimo
+                    while elegido==ultimo:
                         elegido=random.randint(0,3)
                     ultimo=elegido
                     x = (p0x + vertx[ultimo]) / 2
