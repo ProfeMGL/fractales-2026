@@ -28,61 +28,99 @@ with tab_galeria:
 with tab_ejecutar:
     st.header("Generador de Fractales")
     
-    # Dividimos en dos columnas principales: controles (izquierda) y gráfico (derecha)
-    col_controles, col_grafico = st.columns([1, 2]) 
-    with col_controles:
-        st.write("### Parámetros")
-        # El slider con el valor de 20000
-        iteraciones = st.slider("Iteraciones:", min_value=1000, max_value=50000, value=20000, step=1000)
-        st.write("### Vértices del Triángulo")
-        # Usamos dos columnas internas para los inputs (X e Y al costado)
-        c1, c2 = st.columns(2)
-        with c1:
-            # Vértice 1: (5, 5)
-            v1x = st.number_input("X1", value=5.0, step=0.1, format="%.1f")
-            # Vértice 2: (-5, 5)
-            v2x = st.number_input("X2", value=-5.0, step=0.1, format="%.1f")
-            # Vértice 3: (0, 7)
-            v3x = st.number_input("X3", value=0.0, step=0.1, format="%.1f")
-        with c2:
-            v1y = st.number_input("Y1", value=5.0, step=0.1, format="%.1f")
-            v2y = st.number_input("Y2", value=5.0, step=0.1, format="%.1f")
-            v3y = st.number_input("Y3", value=-5.0, step=0.1, format="%.1f")
+    # 1. Creamos el diccionario con las descripciones que pediste
+    opciones_fractales = {
+        "fractales_regulares.py": "Fractales en polígonos regulares (math)",
+        "fractales_triangulos.py": "Fractales en triángulos de cualquier tipo",
+        "fractales_cuadrado.py": "Fractales en cuadrados"
+    }
     
-        # El botón al final de la columna de controles
-        generar = st.button("▶️ Generar Fractal")
-
-    with col_grafico:
-        if generar:
-            try:
-                plt.clf() 
+    # Filtramos para que solo muestre los que realmente existen en la carpeta
+    archivos_disponibles = {k: v for k, v in opciones_fractales.items() if os.path.exists(k)}
+    
+    if archivos_disponibles:
+        # 2. Mostramos la lista desplegable con los textos lindos
+        archivo_seleccionado = st.selectbox(
+            "Elegí qué fractal querés generar:", 
+            options=list(archivos_disponibles.keys()),
+            format_func=lambda x: archivos_disponibles[x] # Esto hace que muestre la descripción y no el nombre del archivo
+        )
+        
+        # 3. Definimos si es triángulo (3 lados) o cuadrado (4 lados)
+        es_cuadrado = "cuadrado" in archivo_seleccionado.lower()
+        lados = 4 if es_cuadrado else 3
+        
+        col_controles, col_grafico = st.columns([1, 2]) 
+        
+        with col_controles:
+            st.write("### Parámetros")
+            iteraciones = st.slider("Iteraciones:", min_value=1000, max_value=50000, value=20000, step=1000)
+            
+            st.write(f"### Vértices del {'Cuadrado' if es_cuadrado else 'Triángulo'}")
+            
+            # Inputs para 3 vértices (Triángulo)
+            if not es_cuadrado:
+                c1, c2 = st.columns(2)
+                with c1:
+                    v1x = st.number_input("X1", value=5.0, step=0.1, format="%.1f")
+                    v2x = st.number_input("X2", value=-5.0, step=0.1, format="%.1f")
+                    v3x = st.number_input("X3", value=0.0, step=0.1, format="%.1f")
+                with c2:
+                    v1y = st.number_input("Y1", value=5.0, step=0.1, format="%.1f")
+                    v2y = st.number_input("Y2", value=5.0, step=0.1, format="%.1f")
+                    v3y = st.number_input("Y3", value=-5.0, step=0.1, format="%.1f")
                 vertx = [v1x, v2x, v3x]
                 verty = [v1y, v2y, v3y]
-                fx, fy = [], []
-                p0x, p0y = 0.0, 0.0 # Punto inicial en el centro
+            
+            # Inputs para 4 vértices (Cuadrado)
+            else:
+                c1, c2 = st.columns(2)
+                with c1:
+                    v1x = st.number_input("X1", value=1.0, step=0.1, format="%.1f")
+                    v2x = st.number_input("X2", value=1.0, step=0.1, format="%.1f")
+                    v3x = st.number_input("X3", value=-1.0, step=0.1, format="%.1f")
+                    v4x = st.number_input("X4", value=-1.0, step=0.1, format="%.1f")
+                with c2:
+                    v1y = st.number_input("Y1", value=1.0, step=0.1, format="%.1f")
+                    v2y = st.number_input("Y2", value=-1.0, step=0.1, format="%.1f")
+                    v3y = st.number_input("Y3", value=-1.0, step=0.1, format="%.1f")
+                    v4y = st.number_input("Y4", value=1.0, step=0.1, format="%.1f")
+                vertx = [v1x, v2x, v3x, v4x]
+                verty = [v1y, v2y, v3y, v4y]
                 
-                for _ in range(iteraciones):
-                    v = random.randint(0, 2)
-                    x = (p0x + vertx[v]) / 2
-                    y = (p0y + verty[v]) / 2
-                    fx.append(x)
-                    fy.append(y)
-                    p0x, p0y = x, y
+            generar = st.button("▶️ Generar Fractal")
+
+        with col_grafico:
+            if generar:
+                try:
+                    plt.clf() 
+                    fx, fy = [], []
+                    p0x, p0y = 0.0, 0.0
                     
-                plt.scatter(fx, fy, s=1, color="purple")
-                plt.axis('equal')
-                plt.axis('off')
-                plt.tight_layout()
-                plt.savefig("resultado.png")
-                
-                st.image("resultado.png", caption="Fractal Generado", use_column_width=True)
-                st.success("¡Fractal generado!")
-                
-            except Exception as e:
-                st.error("Hubo un error:")
-                st.code(str(e))
-        else:
-            st.info("Ajustá los parámetros y hacé clic en Generar.")
+                    for _ in range(iteraciones):
+                        v = random.randint(0, lados - 1)
+                        x = (p0x + vertx[v]) / 2
+                        y = (p0y + verty[v]) / 2
+                        fx.append(x)
+                        fy.append(y)
+                        p0x, p0y = x, y
+                        
+                    plt.scatter(fx, fy, s=1, color="purple")
+                    plt.axis('equal')
+                    plt.axis('off')
+                    plt.tight_layout()
+                    plt.savefig("resultado.png")
+                    
+                    st.image("resultado.png", caption="Fractal Generado", use_column_width=True)
+                    st.success("¡Fractal generado!")
+                    
+                except Exception as e:
+                    st.error("Hubo un error:")
+                    st.code(str(e))
+            else:
+                st.info("Ajustá los parámetros y hacé clic en Generar.")
+    else:
+        st.warning("No se encontraron los archivos de los fractales en el repositorio.")
 # --- PESTAÑA 3: VER CÓDIGO (Derecha) ---
 with tab_codigo:
     st.header("Código de los Fractales")
