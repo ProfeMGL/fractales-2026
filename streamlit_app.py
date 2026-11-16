@@ -85,35 +85,58 @@ with tab_ejecutar:
             lados = 4
 
         generar = st.button("▶️ Generar Fractal")
-
+##
     with col_grafico:
         if generar:
             try:
                 plt.clf() 
                 fx, fy = [], []
-                p0x, p0y = 0.0, 0.0              
+                p0x, p0y = 0.0, 0.0
                 
-                ultimo = random.randint(0, 3) # Lo inicializamos antes del bucle                
-                
-                for _ in range(iteraciones):
-                    elegido = random.randint(0, 3)
-                    while elegido == ultimo: 
+                # --- CASO 1: CUADRADO (Con el while) ---
+                if "cuadrado" in archivo_seleccionado:
+                    ultimo = random.randint(0, 3)
+                    for _ in range(iteraciones):
                         elegido = random.randint(0, 3)
-                    ultimo = elegido
-                    
-                    x = (p0x + vertx[elegido]) / 2 # Podríamos haber puesto"ultimo"
-                    y = (p0y + verty[elegido]) / 2 # pusimos "elegido" por prolijidad"
-                    fx.append(x)
-                    fy.append(y)
-                    p0x, p0y = x, y
-                    
+                        while elegido == ultimo:
+                            elegido = random.randint(0, 3)
+                        ultimo = elegido
+                        
+                        # Acá usamos 'elegido', no 'ultimo'
+                        x = (p0x + vertx[elegido]) / 2
+                        y = (p0y + verty[elegido]) / 2
+                        fx.append(x)
+                        fy.append(y)
+                        p0x, p0y = x, y
+                
+                # --- CASO 2: TRIÁNGULOS ---
+                elif "triangulos" in archivo_seleccionado:
+                    for _ in range(iteraciones):
+                        elegido = random.randint(0, 2)
+                        x = (p0x + vertx[elegido]) / 2
+                        y = (p0y + verty[elegido]) / 2
+                        fx.append(x)
+                        fy.append(y)
+                        p0x, p0y = x, y
+                
+                # --- CASO 3: POLÍGONOS REGULARES ---
+                else:
+                    for _ in range(iteraciones):
+                        elegido = random.randint(0, int(lados) - 1)
+                        x = (p0x + vertx[elegido]) / 2
+                        y = (p0y + verty[elegido]) / 2
+                        fx.append(x)
+                        fy.append(y)
+                        p0x, p0y = x, y
+                
+                # --- DIBUJO FINAL ---
                 plt.scatter(fx, fy, s=1, color="purple")
                 plt.axis('equal')
                 plt.axis('off')
                 plt.tight_layout()
                 plt.savefig("resultado.png")
                 
-                st.image("resultado.png", caption="Fractal Generado", use_column_width=True)
+                st.image("resultado.png", caption="Fractal Generado", use_container_width=True)
                 st.success("¡Fractal generado!")
                 
             except Exception as e:
@@ -121,6 +144,7 @@ with tab_ejecutar:
                 st.code(str(e))
         else:
             st.info("Ajustá los parámetros y hacé clic en Generar.")
+    ##
 # --- PESTAÑA 3: VER CÓDIGO (Derecha) ---
 with tab_codigo:
     st.header("Código de los Fractales")
