@@ -92,11 +92,17 @@ with tab_ejecutar:
                 plt.clf() 
                 fx, fy = [], []
                 p0x, p0y = 0.0, 0.0
-                
-                for _ in range(iteraciones):
-                    v = random.randint(0, int(lados) - 1)
-                    x = (p0x + vertx[v]) / 2
-                    y = (p0y + verty[v]) / 2
+         ##################################################
+                ultimo=random.radint(0,3)
+        ###################################################
+                 for _ in range(iteraciones):
+                   elegido=random.radint(0,3)
+                    while elegido==ultimo
+                        elegido=random.randint(0,3)
+                    ultimo=elegido
+                    #v = random.randint(0, int(lados) - 1)
+                    x = (p0x + vertx[ultimo]) / 2
+                    y = (p0y + verty[ultimo]) / 2
                     fx.append(x)
                     fy.append(y)
                     p0x, p0y = x, y
