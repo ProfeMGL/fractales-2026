@@ -3,6 +3,7 @@ import os
 import matplotlib
 matplotlib.use('Agg') # Evita que intente abrir ventanas
 import matplotlib.pyplot as plt
+import random
 
 st.set_page_config(page_title="Fractales 2026", page_icon="🌀")
 st.title("Proyecto Fractales 2026 🌀")
