@@ -26,7 +26,7 @@ def fractales(x,fy):
         vy=coordy[elegido]
         ultimo=elegido
         #obtenemos el punto a graficar
-        x=(p0x+vx)/2;y=(p0y+vy)/2
+        x=(p0x+vx)*0.47;y=(p0y+vy)0.47
         fx.append(x)
         fy.append(y)
         p0x=x;p0y=y
