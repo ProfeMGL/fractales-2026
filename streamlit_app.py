@@ -91,15 +91,18 @@ with tab_ejecutar:
             try:
                 plt.clf() 
                 fx, fy = [], []
-                p0x, p0y = 0.0, 0.0
-                ultimo=random.radint(0,3)
+                p0x, p0y = 0.0, 0.0              
+                
+                ultimo = random.randint(0, 3) # Lo inicializamos antes del bucle                
+                
                 for _ in range(iteraciones):
-                    elegido=random.radint(0,3)
-                    while elegido==ultimo:
-                        elegido=random.randint(0,3)
-                    ultimo=elegido
-                    x = (p0x + vertx[ultimo]) / 2
-                    y = (p0y + verty[ultimo]) / 2
+                    elegido = random.randint(0, 3)
+                    while elegido == ultimo: 
+                        elegido = random.randint(0, 3)
+                    ultimo = elegido
+                    
+                    x = (p0x + vertx[elegido]) / 2 # Podríamos haber puesto"ultimo"
+                    y = (p0y + verty[elegido]) / 2 # pusimos "elegido" por prolijidad"
                     fx.append(x)
                     fy.append(y)
                     p0x, p0y = x, y
